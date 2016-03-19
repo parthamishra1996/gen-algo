@@ -6,6 +6,7 @@ import numpy as np
 #import heapq
 import math
 
+
 #Function to get n bit binary representation of integer x
 get_bin = lambda x, n: format(x, 'b').zfill(n)
 
@@ -16,13 +17,13 @@ enc_size = int(math.ceil(math.log(nodes,2)))
 map = {}
 
 #Encoding of all the nodes into binary
-'''print "Enter the co-ordinates(x y) for all the nodes"
+print "Enter the co-ordinates(x y) for all the nodes"
 for i in range(nodes):
 	a = int(input("x: "))
 	b = int(input("y: "))
 	bin = get_bin(i,enc_size)
 	map[bin] = (a,b)
-'''
+
 str_size = nodes*enc_size
 pop_size = int(input("Enter number of individuals in a population: "))
 
@@ -31,8 +32,15 @@ pop = []
 for i in range(pop_size):
 	pop.append(list((np.random.choice([0,1], size=(str_size,)))))
 #print pop
+fit = [0 for x in range(pop_size)]
+
+def calc_fitness(pop, fit):
+	'''Function to calculate fitness of each individual of population'''
+	#fit[1]=10
+	#print fit	
 
 #Iterate till convergence
 convergence = False
-#while(!convergence):
-	#calc_fitness(pop)
+while(not convergence):
+	calc_fitness(pop,fit)
+
