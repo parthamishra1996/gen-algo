@@ -1,3 +1,22 @@
+##### EDIT NOTES  #####
+
+#1. Changed the code to generate map_1 ,keys have been exchanged 
+#    with values , did that since it seemed more intuitive and 
+#    leads to less lines of code
+#    
+#
+#2. Changed the start and end code snippet
+#
+#3. Node co-ordinates has been defined as a map between node 
+#   co-ordinates,though can be also be done as a map between node
+#   numbers.
+#
+#4. Change the code for assigning initial population as this code may 
+#   assgn values that are out of range if population size is not of the 
+#   for 2^k - 1
+
+### CODE ####
+
 import sys
 sys.path.append('/usr/lib/python2.7/dist-packages')
 import numpy as np
@@ -17,48 +36,102 @@ nodes = int(input("Enter number of nodes: "))
 enc_size = int(math.ceil(math.log(nodes,2)))
 
 #Map to map the co-ordinates to binary encoding
-map = {}
-
+map_1 = {}
 #Encoding of all the nodes into binary
 print "Enter the co-ordinates(x y) for all the nodes"
 for i in range(nodes):
-	a = int(input("x: "))
-	b = int(input("y: "))
-	bin = get_bin(i,enc_size)
-	map[(a,b)] = bin
+    print "node ("+str(i)+") : " 
+    a = int(input("x: "))
+    b = int(input("y: "))
+    bin = get_bin(i,enc_size)
+    map_1[bin] = (a,b)
+ 
+ #commneted the older code snippet for entering the starting and ending node
+ #what is the use of separately entering a start and end node
+ #when they are part of the nodes already entered       
+                      
+##Enter the starting and ending nodes
+#print "For starting node:"
+#startx = int(input("x: "))
+#starty = int(input("y: "))
+#start = (startx,starty)
+#
+#print "For ending node:"
+#endx = int(input("x: "))
+#endy = int(input("y: "))
+#end = (endx,endy)
 
-#Enter the starting and ending nodes
-print "For starting node:"
-startx = int(input("x: "))
-starty = int(input("y: "))
-start = (startx,starty)
+#New code snippet to enter starting and ending nodes
+print "Nodes List \n"
+print range(nodes)
+print
+print "Please enter only those nodes in the node list \n"
 
-print "For ending node:"
-endx = int(input("x: "))
-endy = int(input("y: "))
-end = (endx,endy)
+start = int(input("Enter the starting node : "))
+end = int(input("Enter the ending node : "))
+
+ 
 
 #Enter the connectivity of the nodes
 
+nodes_conn = {}
 
+for i in range(nodes):
+    a = map_1[get_bin(i , enc_size)] 
+    print "Enter the nodes connected to Node "+str(i)+" : "
+    ch = "Y"
+    nodes_conn[a] = []
+    while(ch == "Y"):
+        temp = int(input("Enter the neighbouring node :"))
+        temp = map_1[get_bin(temp , enc_size)]
+        nodes_conn[a].append(temp)
+        ch = raw_input("More Y/N : ") # change to input() in python 3.0
+        
+#Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
+#Well number of nodes will also do the trick but then the program will take longer to converge        
+        
 #String and population size computation
-str_size = nodes*enc_size
+str_size = nodes*enc_size #change this to no.of.obstackles * enc_size
 pop_size = int(input("Enter number of individuals in a population: "))
 
 #Generate initial population
 pop = []
+#Change the code for assigning initial population
 for i in range(pop_size):
 	pop.append(list((np.random.choice([0,1], size=(str_size,)))))
 print pop
+
+#Initial Fitnesss
 fit = [0 for x in range(pop_size)]
 
+#Calculating the fitness of the population
+
 def calc_fitness(pop, fit):
-	'''Function to calculate fitness of each individual of population'''
+	#Calculating the fitness of the populaton,calls another function that calculates the indivisual population
 	#Assign fitness considering connectivity and euler distance between two nodes
 	for i in range(pop_size):
-		fit[i]=pop_size-i-1
-	#fit[1]=10
-	#print fit	
+	    fit[i] = calc_fitness_indivisual(pop[i])
+
+def calc_fitness_indivisual(indi):
+    #converting to a list of characters to make it simple
+    for i in range(len(indi)):
+        indi[i] = str(indi[i])
+        
+    total_dist = 0
+    for i in range(len(indi)/3 -  1):
+        current_node_coordinates = map_1["".join(indi[i:(i+3)])]
+        next_node_coordinates = map_1["".join(indi[(i+3):(i+6)])]
+        if (next_node_coordinates in nodes_conn[current_node_coordinates]):
+            temp_1 = current_node_coordinates
+            temp_2 = next_node_coordinates
+            dist = math.sqrt((temp_2[0] - temp_1[0])**2 + (temp_2[1] - temp_1[1])**2)
+            total_dist +=dist
+    if(total_dist):
+        indi_fit = 1/total_dist
+        return indi_fit
+    else:
+        return 0
+    	
 
 ##Iterate till convergence
 convergence = False
