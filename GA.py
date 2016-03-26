@@ -76,7 +76,7 @@ end = int(input("Enter the ending node : "))
  
 
 #Enter the connectivity of the nodes
-
+'''
 nodes_conn = {}
 
 for i in range(nodes):
@@ -89,7 +89,7 @@ for i in range(nodes):
         temp = map_1[get_bin(temp , enc_size)]
         nodes_conn[a].append(temp)
         ch = raw_input("More Y/N : ") # change to input() in python 3.0
-        
+'''        
 #Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
 #Well number of nodes will also do the trick but then the program will take longer to converge        
        
@@ -116,7 +116,7 @@ print pop
 
 #Initial Fitnesss
 fit = [0 for x in range(pop_size)]
-
+'''
 #Calculating the fitness of the population
 
 def calc_fitness(pop, fit):
@@ -145,6 +145,13 @@ def calc_fitness_indivisual(indi):
     else:
         return 0
     	
+'''
+##Dummy fitness function
+def calc_fitness(pop, fit):
+    '''Function to calculate fitness of each individual of population'''
+    #Assign fitness considering connectivity and euler distance between two nodes
+    for i in range(pop_size):
+        fit[i]=pop_size-i-1
 
 ##Iterate till convergence
 convergence = False
@@ -159,17 +166,44 @@ for i in range(pop_size):
 	heapq.heappush(pq,(fit[i],pop[i]))
 
 #One with highest fitness, automatically at the end of priority queue
-best_sol = pq[pop_size-1]
+best_sol = heapq.heappop(pq)
+print "Best"+str(best_sol)
+ctr = 0
+while(not convergence):
+    #Selection operation
 
-while(not convergence):		
-	#Selection operation
-	
-	heapq.heappop(pq)[0] #Check for [1] in case of error
-	heapq.heappush(pq,best_sol)
+    best_ind = best_sol[1] #Check for [1] in case of error
+    print "Best_ind: "+str(best_ind)
+    new_pop = []
+    new_pop.append(best_ind)
+    new_pop.append(best_ind)
+    for x in range(pop_size-2):
+        new_pop.append(heapq.heappop(pq)[1])
+    print "Reject: "+ str(heapq.heappop(pq))
+    print "New pop: "+str(new_pop)
+    #heapq.heappush(pq,best_sol)
 
-	#Cross-over operation
+    #Cross-over operation
+    cross_pop = []
+    for x in range(pop_size):
+        cross_pop.append(new_pop[x][:len(new_pop[x])/2]+new_pop[pop_size-x-1][len(new_pop[x])/2:])
 
-	#Mutation Operation
+    print "cross_pop: "+str(cross_pop)
+    #Mutation Operation
+
+    #Iterate
+    print "Iter"
+    '''calc_fitness(cross_pop,fit)
+    #Arrange on the basis of fitness
+    for i in range(pop_size):
+        heapq.heappush(pq,(fit[i],cross_pop[i]))
+    best_sol = heapq.heappop(pq)
+    '''
+    #Dummy convergence
+    ctr+=1
+    if(ctr == 1):
+        convergence = True
 
 #Solution: best fit individual
 #print pq[0][1]
+print "End"
