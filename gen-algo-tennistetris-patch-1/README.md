@@ -1,2 +1,0 @@
-# gen-algo
-term project

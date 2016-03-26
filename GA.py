@@ -1,19 +1,7 @@
 ##### EDIT NOTES  #####
-
-#1. Changed the code to generate map_1 ,keys have been exchanged 
-#    with values , did that since it seemed more intuitive and 
-#    leads to less lines of code
-#    
+#1. Edited the Code to define initial population so as to prevent out of range values
 #
-#2. Changed the start and end code snippet
-#
-#3. Node co-ordinates has been defined as a map between node 
-#   co-ordinates,though can be also be done as a map between node
-#   numbers.
-#
-#4. Change the code for assigning initial population as this code may 
-#   assgn values that are out of range if population size is not of the 
-#   for 2^k - 1
+#2. Edited the fitness function
 
 ### CODE ####
 
@@ -28,6 +16,13 @@ import math
 
 #Function to get n bit binary representation of integer x
 get_bin = lambda x, n: format(x, 'b').zfill(n)
+
+#Function to real representation of a binary numer fed in the form of  a list
+def get_real_list(x):
+    real = 0
+    for i in range(len(x)):
+        real +=x[i]*2**(len(x)-i-1)
+    return real
 
 #Number of nodes or path points to be travelled: nodes
 nodes = int(input("Enter number of nodes: "))
@@ -76,20 +71,19 @@ end = int(input("Enter the ending node : "))
  
 
 #Enter the connectivity of the nodes
-'''
+
 nodes_conn = {}
 
 for i in range(nodes):
     a = map_1[get_bin(i , enc_size)] 
     print "Enter the nodes connected to Node "+str(i)+" : "
     ch = "Y"
-    nodes_conn[a] = []
+    nodes_conn[a] = [a]
     while(ch == "Y"):
         temp = int(input("Enter the neighbouring node :"))
         temp = map_1[get_bin(temp , enc_size)]
-        nodes_conn[a].append(temp)
-        ch = raw_input("More Y/N : ") # change to input() in python 3.0
-'''        
+        nodes_conn[a].append(temp)        
+
 #Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
 #Well number of nodes will also do the trick but then the program will take longer to converge        
        
@@ -100,13 +94,18 @@ pop_size = int(input("Enter number of individuals in a population: "))
 #Generate initial population
 pop = []
 
-#Change the code for assigning initial population
+
 for i in range(pop_size):
     ind = []
     for x in range(len(map_2[start])):
         ind.append(int(map_2[start][x]))
     mid_size = str_size - 2*enc_size
-    ind += list((np.random.choice([0,1], size=(mid_size,))))
+    for j in range(mid_size/enc_size):
+        while(1):
+            node_allowed = list((np.random.choice([0,1], size=(enc_size,))))
+            if (get_real_list(node_allowed)<nodes):
+                break
+        ind+=node_allowed 
     for x in range(len(map_2[end])):
         ind.append(int(map_2[end][x]))
     print "Ind"+str(i)+"  "+str(ind)
@@ -116,7 +115,7 @@ print pop
 
 #Initial Fitnesss
 fit = [0 for x in range(pop_size)]
-'''
+
 #Calculating the fitness of the population
 
 def calc_fitness(pop, fit):
@@ -131,21 +130,23 @@ def calc_fitness_indivisual(indi):
         indi[i] = str(indi[i])
         
     total_dist = 0
-    for i in range(len(indi)/3 -  1):
-        current_node_coordinates = map_1["".join(indi[i:(i+3)])]
-        next_node_coordinates = map_1["".join(indi[(i+3):(i+6)])]
+    for i in range(len(indi)/enc_size -  1):
+        current_node_coordinates = map_1["".join(indi[i*enc_size:((i+1)*enc_size)])]
+        next_node_coordinates = map_1["".join(indi[((i+1)*enc_size):((i+2)*enc_size)])]
         if (next_node_coordinates in nodes_conn[current_node_coordinates]):
             temp_1 = current_node_coordinates
             temp_2 = next_node_coordinates
             dist = math.sqrt((temp_2[0] - temp_1[0])**2 + (temp_2[1] - temp_1[1])**2)
             total_dist +=dist
+        else:
+            return 0
     if(total_dist):
         indi_fit = 1/total_dist
         return indi_fit
     else:
         return 0
     	
-'''
+
 ##Dummy fitness function
 def calc_fitness(pop, fit):
     '''Function to calculate fitness of each individual of population'''
