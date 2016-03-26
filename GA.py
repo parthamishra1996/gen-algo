@@ -10,10 +10,6 @@
 #3. Node co-ordinates has been defined as a map between node 
 #   co-ordinates,though can be also be done as a map between node
 #   numbers.
-#
-#4. Change the code for assigning initial population as this code may 
-#   assgn values that are out of range if population size is not of the 
-#   for 2^k - 1
 
 ### CODE ####
 
