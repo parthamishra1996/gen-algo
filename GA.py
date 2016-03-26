@@ -35,8 +35,10 @@ nodes = int(input("Enter number of nodes: "))
 #Size of encoding of a single string representing a node: enc_size
 enc_size = int(math.ceil(math.log(nodes,2)))
 
-#Map to map the co-ordinates to binary encoding
-map_1 = {}
+#Maps
+map_1 = {}  #Maps binary to co-ordinates
+map_2 = {}  #Maps nodenumbers to binary
+
 #Encoding of all the nodes into binary
 print "Enter the co-ordinates(x y) for all the nodes"
 for i in range(nodes):
@@ -45,6 +47,7 @@ for i in range(nodes):
     b = int(input("y: "))
     bin = get_bin(i,enc_size)
     map_1[bin] = (a,b)
+    map_2[i] = bin
  
  #commneted the older code snippet for entering the starting and ending node
  #what is the use of separately entering a start and end node
@@ -89,16 +92,26 @@ for i in range(nodes):
         
 #Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
 #Well number of nodes will also do the trick but then the program will take longer to converge        
-        
+       
 #String and population size computation
 str_size = nodes*enc_size #change this to no.of.obstackles * enc_size
 pop_size = int(input("Enter number of individuals in a population: "))
 
 #Generate initial population
 pop = []
+
 #Change the code for assigning initial population
 for i in range(pop_size):
-	pop.append(list((np.random.choice([0,1], size=(str_size,)))))
+    ind = []
+    for x in range(len(map_2[start])):
+        ind.append(int(map_2[start][x]))
+    mid_size = str_size - 2*enc_size
+    ind += list((np.random.choice([0,1], size=(mid_size,))))
+    for x in range(len(map_2[end])):
+        ind.append(int(map_2[end][x]))
+    print "Ind"+str(i)+"  "+str(ind)
+    pop.append(ind)
+    #del ind[:]
 print pop
 
 #Initial Fitnesss
