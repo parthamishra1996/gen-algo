@@ -1,8 +1,3 @@
-##### EDIT NOTES  #####
-#1. Edited the Code to define initial population so as to prevent out of range values
-#
-#2. Edited the fitness function
-
 ### CODE ####
 
 import sys
@@ -43,7 +38,7 @@ for i in range(nodes):
     bin = get_bin(i,enc_size)
     map_1[bin] = (a,b)
     map_2[i] = bin
- 
+
  #commneted the older code snippet for entering the starting and ending node
  #what is the use of separately entering a start and end node
  #when they are part of the nodes already entered       
@@ -67,29 +62,33 @@ print "Please enter only those nodes in the node list \n"
 
 start = int(input("Enter the starting node : "))
 end = int(input("Enter the ending node : "))
-
- 
+print
+print 
 
 #Enter the connectivity of the nodes
 
 nodes_conn = {}
 
 for i in range(nodes):
-    a = map_1[get_bin(i , enc_size)] 
+    a = map_1[get_bin(i , enc_size)]
+    ch =int(input("Number of nodes connected to Node "+str(i)+" : ")) 
     print "Enter the nodes connected to Node "+str(i)+" : "
-    ch = "Y"
+    #ch = "Y"
     nodes_conn[a] = [a]
-    while(ch == "Y"):
+    for ch in range(ch):
         temp = int(input("Enter the neighbouring node :"))
         temp = map_1[get_bin(temp , enc_size)]
-        nodes_conn[a].append(temp)        
+        nodes_conn[a].append(temp)
+
 
 #Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
 #Well number of nodes will also do the trick but then the program will take longer to converge        
        
 #String and population size computation
-str_size = nodes*enc_size #change this to no.of.obstackles * enc_size
+print
+str_size = nodes*enc_size #change this to no.of.obstacles * enc_size
 pop_size = int(input("Enter number of individuals in a population: "))
+print
 
 #Generate initial population
 pop = []
@@ -111,8 +110,10 @@ for i in range(pop_size):
     print "Ind"+str(i)+"  "+str(ind)
     pop.append(ind)
     #del ind[:]
+print "Population: "
 print pop
-
+print
+print
 #Initial Fitnesss
 fit = [0 for x in range(pop_size)]
 
@@ -152,7 +153,7 @@ def calc_fitness(pop, fit):
     '''Function to calculate fitness of each individual of population'''
     #Assign fitness considering connectivity and euler distance between two nodes
     for i in range(pop_size):
-        fit[i]=pop_size-i-1
+        fit[i]=i
 
 ##Iterate till convergence
 convergence = False
@@ -164,13 +165,16 @@ calc_fitness(pop,fit)
 
 #Arrange on the basis of fitness
 for i in range(pop_size):
-	heapq.heappush(pq,(fit[i],pop[i]))
+	heapq.heappush(pq,(-fit[i],pop[i]))
 
 #One with highest fitness, automatically at the end of priority queue
-best_sol = heapq.heappop(pq)
-print "Best"+str(best_sol)
 ctr = 0
+print "Generation "+str(ctr)+": "
+best_sol = heapq.heappop(pq)
+print "Best: "+str(best_sol)
+
 while(not convergence):
+    
     #Selection operation
 
     best_ind = best_sol[1] #Check for [1] in case of error
@@ -193,18 +197,24 @@ while(not convergence):
     #Mutation Operation
 
     #Iterate
-    print "Iter"
-    '''calc_fitness(cross_pop,fit)
+    ctr+=1
+    print "Generation "+str(ctr)+": "
+    calc_fitness(cross_pop,fit)
     #Arrange on the basis of fitness
     for i in range(pop_size):
-        heapq.heappush(pq,(fit[i],cross_pop[i]))
+        heapq.heappush(pq,(-fit[i],cross_pop[i]))
     best_sol = heapq.heappop(pq)
-    '''
+    print "Best: "+str(best_sol)
     #Dummy convergence
-    ctr+=1
-    if(ctr == 1):
+    #ctr+=1
+    if(ctr == 5):
         convergence = True
 
 #Solution: best fit individual
-#print pq[0][1]
+print
+print
+print "Final Solution: "
+print best_ind
+print
+
 print "End"
