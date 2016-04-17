@@ -37,23 +37,8 @@ for i in range(nodes):
     b = int(input("y: "))
     bin = get_bin(i,enc_size)
     map_1[bin] = (a,b)
-    map_2[i] = bin
-
- #commneted the older code snippet for entering the starting and ending node
- #what is the use of separately entering a start and end node
- #when they are part of the nodes already entered       
-                      
-##Enter the starting and ending nodes
-#print "For starting node:"
-#startx = int(input("x: "))
-#starty = int(input("y: "))
-#start = (startx,starty)
-#
-#print "For ending node:"
-#endx = int(input("x: "))
-#endy = int(input("y: "))
-#end = (endx,endy)
-
+    map_2[i] = bin  
+        
 #New code snippet to enter starting and ending nodes
 print "Nodes List \n"
 print range(nodes)
@@ -79,10 +64,6 @@ for i in range(nodes):
         temp = int(input("Enter the neighbouring node :"))
         temp = map_1[get_bin(temp , enc_size)]
         nodes_conn[a].append(temp)
-
-
-#Write a code to find the number of loops in the map,sine the number of loops is equal to the number of obstacles
-#Well number of nodes will also do the trick but then the program will take longer to converge        
        
 #String and population size computation
 print
@@ -109,16 +90,16 @@ for i in range(pop_size):
         ind.append(int(map_2[end][x]))
     print "Ind"+str(i)+"  "+str(ind)
     pop.append(ind)
-    #del ind[:]
+
 print "Population: "
 print pop
 print
 print
+
 #Initial Fitnesss
 fit = [0 for x in range(pop_size)]
 
 #Calculating the fitness of the population
-
 def calc_fitness(pop, fit):
 	#Calculating the fitness of the populaton,calls another function that calculates the indivisual population
 	#Assign fitness considering connectivity and euler distance between two nodes
@@ -147,13 +128,6 @@ def calc_fitness_indivisual(indi):
     else:
         return 0
     	
-
-##Dummy fitness function
-def calc_fitness(pop, fit):
-    '''Function to calculate fitness of each individual of population'''
-    #Assign fitness considering connectivity and euler distance between two nodes
-    for i in range(pop_size):
-        fit[i]=i
 
 ##Iterate till convergence
 convergence = False
@@ -186,28 +160,26 @@ while(not convergence):
         new_pop.append(heapq.heappop(pq)[1])
     print "Reject: "+ str(heapq.heappop(pq))
     print "New pop: "+str(new_pop)
-    #heapq.heappush(pq,best_sol)
-
+    
     #Cross-over operation
     cross_pop = []
     for x in range(pop_size):
-        cross_pop.append(new_pop[x][:len(new_pop[x])/2]+new_pop[pop_size-x-1][len(new_pop[x])/2:])
+        temp_num = len(new_pop[x])/2 - (len(new_pop[x])/2)%enc_size
+        cross_pop.append(new_pop[x][:temp_num]+new_pop[pop_size-x-1][temp_num:])
 
     print "cross_pop: "+str(cross_pop)
-    #Mutation Operation
-
+    
     #Iterate
     ctr+=1
     print "Generation "+str(ctr)+": "
     calc_fitness(cross_pop,fit)
+    
     #Arrange on the basis of fitness
     for i in range(pop_size):
         heapq.heappush(pq,(-fit[i],cross_pop[i]))
     best_sol = heapq.heappop(pq)
     print "Best: "+str(best_sol)
-    #Dummy convergence
-    #ctr+=1
-    if(ctr == 5):
+    if(ctr == 1000):
         convergence = True
 
 #Solution: best fit individual
